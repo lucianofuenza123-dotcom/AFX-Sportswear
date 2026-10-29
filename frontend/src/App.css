@@ -937,3 +937,390 @@
     right: 10px;
   }
 }
+
+
+/* =================================
+   INTERACCIONES HOVER)- AFX-  matias
+   ================================= */
+
+/* Navegación: Inicio, Productos y Carrito */
+.site-header__link {
+  position: relative;
+  display: inline-block;
+  padding: 8px 0;
+  transition: color 0.25s ease;
+}
+
+.site-header__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 2px;
+  width: 100%;
+  height: 2px;
+  background: #171717;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.site-header__link:hover::after,
+.site-header__link.active::after {
+  transform: scaleX(1);
+}
+
+/* Botón principal del encabezado */
+.site-header__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.site-header__cta:hover {
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 15%);
+}
+
+/* Botones de las tarjetas */
+.product-card__button {
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.product-card__button:hover:not(:disabled) {
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgb(0 0 0 / 12%);
+}
+
+/* Botón principal del detalle del producto */
+.product-detail__add-button {
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.product-detail__add-button:hover:not(:disabled) {
+  background: #333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 12%);
+}
+
+/* Botón para volver */
+.product-detail__back {
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.product-detail__back:hover {
+  color: #000;
+  transform: translateX(-3px);
+}
+
+/* Botones del carrito */
+.cart-page button {
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.cart-page button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.cart-page button:active:not(:disabled),
+.product-card__button:active:not(:disabled),
+.product-detail__add-button:active:not(:disabled),
+.site-header__cta:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Evitar animaciones para quienes las desactivan */
+@media (prefers-reduced-motion: reduce) {
+  .site-header__link,
+  .site-header__link::after,
+  .site-header__cta,
+  .product-card__button,
+  .product-detail__add-button,
+  .product-detail__back,
+  .cart-page button {
+    transition: none;
+  }
+}
+
+/* =========================
+   CARRITO AFX SPORTSWEAR- matias
+========================= */
+
+.cart-page {
+  max-width: 1100px;
+  min-height: 65vh;
+  margin: 48px auto;
+  padding: 24px;
+}
+
+.cart-page h1 {
+  margin-bottom: 32px;
+  font-size: 32px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.cart-page > p {
+  margin: 24px 0;
+  color: #555;
+}
+
+/* Distribución de productos y resumen */
+.cart-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 32px;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Cada producto del carrito */
+.cart-item {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 24px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.cart-item:hover {
+  border-color: #bdbdbd;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 5%);
+}
+
+.cart-item img {
+  display: block;
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  background: #f3f3f3;
+}
+
+.cart-item h2,
+.cart-item h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.cart-item p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.cart-item__quantity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.cart-item__quantity button {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #171717;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cart-item__quantity button:hover:not(:disabled) {
+  border-color: #171717;
+  background: #171717;
+  color: #fff;
+}
+
+.cart-item__quantity button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.cart-item__remove {
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cart-item__remove:hover:not(:disabled) {
+  border-color: #171717;
+  background: #171717;
+  color: #fff;
+}
+
+/* Resumen del pedido */
+.cart-summary {
+  position: sticky;
+  top: 24px;
+  padding: 24px;
+  border: 1px solid #e5e5e5;
+  background: #fafafa;
+}
+
+.cart-summary h2 {
+  margin: 0 0 22px;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.cart-summary p {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 16px 0;
+  color: #444;
+  font-size: 14px;
+}
+
+.cart-summary p:last-of-type {
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  color: #171717;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.cart-summary button {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border: 1px solid #171717;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.cart-summary button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgb(0 0 0 / 10%);
+}
+
+.cart-summary button:first-of-type {
+  background: #fff;
+  color: #171717;
+}
+
+.cart-summary button:first-of-type:hover:not(:disabled) {
+  background: #eaeaea;
+}
+
+.cart-summary button:last-of-type {
+  background: #171717;
+  color: #fff;
+}
+
+.cart-summary button:last-of-type:hover:not(:disabled) {
+  background: #383838;
+}
+
+.cart-summary button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Enlace para ver el carrito desde el producto */
+.product-detail__cart-link-wrapper {
+  margin-top: 18px;
+}
+
+.product-detail__cart-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid #171717;
+  background: #fff;
+  color: #171717;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.product-detail__cart-link:hover {
+  transform: translateY(-2px);
+  background: #171717;
+  color: #fff;
+}
+
+/* Adaptación para celulares */
+@media (max-width: 760px) {
+  .cart-page {
+    margin: 24px auto;
+    padding: 16px;
+  }
+
+  .cart-page h1 {
+    font-size: 26px;
+  }
+
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-summary {
+    position: static;
+  }
+
+  .cart-item {
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 14px;
+    padding: 12px;
+  }
+
+  .cart-item img {
+    height: 130px;
+  }
+
+  .cart-item h2,
+  .cart-item h3 {
+    font-size: 16px;
+  }
+}

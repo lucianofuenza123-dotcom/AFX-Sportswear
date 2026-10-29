@@ -33,10 +33,11 @@ function ProductDetail() {
     maximumFractionDigits: 0,
   });
 
-  const currentQuantity = items.find(
-    (item) =>
-      item.product.id === product.id && item.size === selectedSize
-  )?.quantity ?? 0;
+  const currentQuantity =
+    items.find(
+      (item) =>
+        item.product.id === product.id && item.size === selectedSize
+    )?.quantity ?? 0;
 
   const availableStock = product.stock - currentQuantity;
 
@@ -133,6 +134,7 @@ function ProductDetail() {
               if (Number.isInteger(value) && value >= 1) {
                 setQuantity(Math.min(value, Math.max(1, availableStock)));
               }
+
               setMessage("");
             }}
           />
@@ -155,8 +157,10 @@ function ProductDetail() {
           )}
 
           {items.length > 0 && (
-            <p>
-              <Link to="/cart">Ver mi carrito</Link>
+            <p className="product-detail__cart-link-wrapper">
+              <Link to="/cart" className="product-detail__cart-link">
+                Ver mi carrito →
+              </Link>
             </p>
           )}
 
