@@ -1,7 +1,10 @@
 
 import { Link, NavLink } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 function Header() {
+  const { totalItems } = useCart();
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -27,6 +30,15 @@ function Header() {
             }
           >
             Productos
+          </NavLink>
+
+          <NavLink
+            to="/cart"
+            className={({ isActive }) =>
+              isActive ? "site-header__link active" : "site-header__link"
+            }
+          >
+            Carrito ({totalItems})
           </NavLink>
         </nav>
 

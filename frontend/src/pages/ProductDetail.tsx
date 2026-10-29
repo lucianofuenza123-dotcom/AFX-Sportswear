@@ -1,16 +1,19 @@
 
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { products } from "../data/products";
+import { useCart } from "../context/CartContext";
 
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const product = products.find((item) => item.id === Number(id));
+  const { addToCart, items } = useCart();
 
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [message, setMessage] = useState("");
+
+  const product = products.find((item) => item.id === Number(id));
 
   if (!product) {
     return (
@@ -29,6 +32,30 @@ function ProductDetail() {
     currency: "ARS",
     maximumFractionDigits: 0,
   });
+
+  const currentQuantity = items.find(
+    (item) =>
+      item.product.id === product.id && item.size === selectedSize
+  )?.quantity ?? 0;
+
+  const availableStock = product.stock - currentQuantity;
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      setMessage("Seleccioná un talle para continuar.");
+      return;
+    }
+
+    if (quantity > availableStock) {
+      setMessage(
+        `Solo podés agregar ${availableStock} unidad(es) más de este talle.`
+      );
+      return;
+    }
+
+    addToCart(product, selectedSize, quantity);
+    setMessage(`${quantity} unidad(es) agregada(s) al carrito.`);
+  };
 
   return (
     <main className="product-detail">
@@ -70,12 +97,16 @@ function ProductDetail() {
             {product.sizes.map((size) => (
               <button
                 key={size}
+                type="button"
                 className={`product-detail__size ${
                   selectedSize === size
                     ? "product-detail__size--selected"
                     : ""
                 }`}
-                onClick={() => setSelectedSize(size)}
+                onClick={() => {
+                  setSelectedSize(size);
+                  setMessage("");
+                }}
                 aria-pressed={selectedSize === size}
                 disabled={product.stock === 0}
               >
@@ -93,35 +124,41 @@ function ProductDetail() {
             className="product-detail__quantity"
             type="number"
             min="1"
-            max={product.stock}
+            max={Math.max(1, availableStock)}
             value={quantity}
             disabled={product.stock === 0}
             onChange={(event) => {
               const value = Number(event.target.value);
 
               if (Number.isInteger(value) && value >= 1) {
-                setQuantity(Math.min(value, product.stock));
+                setQuantity(Math.min(value, Math.max(1, availableStock)));
               }
+              setMessage("");
             }}
           />
 
           <button
+            type="button"
             className="product-detail__add-button"
-            disabled={
-              product.stock === 0 ||
-              !selectedSize ||
-              quantity > product.stock
-            }
-            onClick={() => {
-              alert(
-                `Seleccionaste ${quantity} unidad(es) de ${product.name}, talle ${selectedSize}.`
-              );
-            }}
+            disabled={product.stock === 0}
+            onClick={handleAddToCart}
           >
             {product.stock === 0
               ? "Sin stock"
               : "Agregar al carrito"}
           </button>
+
+          {message && (
+            <p role="status" aria-live="polite">
+              {message}
+            </p>
+          )}
+
+          {items.length > 0 && (
+            <p>
+              <Link to="/cart">Ver mi carrito</Link>
+            </p>
+          )}
 
           {!selectedSize && product.stock > 0 && (
             <p className="product-detail__hint">
