@@ -1,22 +1,75 @@
 
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
 
+const banners = [
+  {
+    image: "/images/banner-entrenamiento.png",
+    eyebrow: "AFX SPORTSWEAR",
+    title: "SUPERÁ TUS LÍMITES.",
+    description:
+      "Equipamiento deportivo para entrenar, competir y dar lo mejor de vos.",
+  },
+  {
+    image: "/images/banner-futbol.png",
+    eyebrow: "PASIÓN POR EL DEPORTE",
+    title: "ENTRENÁ CON ACTITUD.",
+    description:
+      "Encontrá el equipamiento ideal para cada desafío.",
+  },
+  {
+    image: "/images/banner-tercero.jpg",
+    eyebrow: "AFX SPORTSWEAR",
+    title: "EQUIPATE PARA GANAR.",
+    description: "Preparado para cada desafío.",
+    },
+];
+
 function Home() {
   const navigate = useNavigate();
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBanner((current) => (current + 1) % banners.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  function previousBanner() {
+    setCurrentBanner(
+      (current) => (current - 1 + banners.length) % banners.length
+    );
+  }
+
+  function nextBanner() {
+    setCurrentBanner((current) => (current + 1) % banners.length);
+  }
+
+  const banner = banners[currentBanner];
 
   return (
     <main className="home">
-      <section className="home__hero">
-        <div className="home__hero-content">
-          <p className="home__eyebrow">AFX SPORTSWEAR</p>
+      <section className="home__carousel">
+        <img
+          key={banner.image}
+          className="home__carousel-image"
+          src={banner.image}
+          alt="Campaña deportiva AFX Sportswear"
+        />
 
-          <h1>SUPERÁ TUS LÍMITES.</h1>
+        <div className="home__carousel-overlay" />
+
+        <div className="home__carousel-content">
+          <p className="home__eyebrow">{banner.eyebrow}</p>
+
+          <h1>{banner.title}</h1>
 
           <p className="home__description">
-            Equipamiento deportivo para entrenar, competir y dar lo mejor
-            de vos.
+            {banner.description}
           </p>
 
           <button
@@ -25,6 +78,38 @@ function Home() {
           >
             EXPLORAR COLECCIÓN
           </button>
+        </div>
+
+        <button
+          className="home__carousel-arrow home__carousel-arrow--left"
+          onClick={previousBanner}
+          aria-label="Banner anterior"
+        >
+          &#10094;
+        </button>
+
+        <button
+          className="home__carousel-arrow home__carousel-arrow--right"
+          onClick={nextBanner}
+          aria-label="Banner siguiente"
+        >
+          &#10095;
+        </button>
+
+        <div className="home__carousel-dots">
+          {banners.map((item, index) => (
+            <button
+              key={item.image}
+              className={`home__carousel-dot ${
+                currentBanner === index
+                  ? "home__carousel-dot--active"
+                  : ""
+              }`}
+              onClick={() => setCurrentBanner(index)}
+              aria-label={`Ir al banner ${index + 1}`}
+              aria-current={currentBanner === index ? "true" : undefined}
+            />
+          ))}
         </div>
       </section>
 
