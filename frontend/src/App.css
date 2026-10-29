@@ -703,3 +703,84 @@
 .not-found__button:hover {
   background: #444;
 }
+
+
+/* Buscador del catálogo */
+
+.catalog-search {
+  max-width: 620px;
+  margin: 0 auto 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.catalog-search > label {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.catalog-search__input-wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 620px;
+  gap: 10px;
+}
+
+.catalog-search__input-wrapper input {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+  color: #171717;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.catalog-search__input-wrapper input:focus {
+  border-color: #171717;
+}
+
+.catalog-search__input-wrapper button {
+  padding: 0 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.catalog-search__input-wrapper button:hover {
+  background: #eee;
+}
+
+.catalog-empty {
+  padding: 55px 20px;
+  text-align: center;
+  background: #f7f7f7;
+  border-radius: 8px;
+}
+
+.catalog-empty h2 {
+  margin-top: 0;
+}
+
+.catalog-empty p {
+  color: #666;
+}
+
+.catalog-empty button {
+  margin-top: 12px;
+  padding: 13px 18px;
+  border: 1px solid #171717;
+  background: #171717;
+  color: #fff;
+  cursor: pointer;
+}
+
+.catalog-empty button:hover {
+  background: #444;
+}

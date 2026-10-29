@@ -1,6 +1,6 @@
 
-import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import type { Category } from "../types";
@@ -18,17 +18,26 @@ const categories: { label: string; value: Category | "todos" }[] = [
 
 function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
   const selectedCategory = searchParams.get("categoria") ?? "todos";
 
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === "todos") {
-      return products;
-    }
+    const normalizedSearch = searchTerm.trim().toLocaleLowerCase("es");
 
-    return products.filter(
-      (product) => product.category === selectedCategory
-    );
-  }, [selectedCategory]);
+    return products.filter((product) => {
+      const matchesCategory =
+        selectedCategory === "todos" ||
+        product.category === selectedCategory;
+
+      const matchesSearch =
+        product.name.toLocaleLowerCase("es").includes(normalizedSearch) ||
+        product.description.toLocaleLowerCase("es").includes(normalizedSearch);
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [selectedCategory, searchTerm]);
 
   function selectCategory(category: string) {
     if (category === "todos") {
@@ -45,6 +54,30 @@ function Products() {
         <h1>Nuestros productos</h1>
         <p>Encontrá tu próximo equipamiento deportivo.</p>
       </header>
+
+      <div className="catalog-search">
+        <label htmlFor="product-search">Buscar productos</label>
+
+        <div className="catalog-search__input-wrapper">
+          <input
+            id="product-search"
+            type="search"
+            placeholder="Ej.: camiseta, mochila, running..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              aria-label="Limpiar búsqueda"
+            >
+              Limpiar
+            </button>
+          )}
+        </div>
+      </div>
 
       <nav className="catalog-filters" aria-label="Filtrar por categoría">
         {categories.map((category) => (
@@ -64,8 +97,11 @@ function Products() {
       </nav>
 
       <section className="catalog-page__content">
-        <p className="catalog-page__count">
-          {filteredProducts.length} productos encontrados
+        <p className="catalog-page__count" aria-live="polite">
+          {filteredProducts.length}{" "}
+          {filteredProducts.length === 1
+            ? "producto encontrado"
+            : "productos encontrados"}
         </p>
 
         {filteredProducts.length > 0 ? (
@@ -75,13 +111,27 @@ function Products() {
                 key={product.id}
                 product={product}
                 onViewDetails={(productId) =>
-                  window.location.assign(`/productos/${productId}`)
+                  navigate(`/productos/${productId}`)
                 }
               />
             ))}
           </div>
         ) : (
-          <p>No hay productos en esta categoría.</p>
+          <div className="catalog-empty">
+            <h2>No encontramos productos</h2>
+            <p>
+              Probá con otro nombre o seleccioná una categoría diferente.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchTerm("");
+                setSearchParams({});
+              }}
+            >
+              Ver todos los productos
+            </button>
+          </div>
         )}
       </section>
     </main>
