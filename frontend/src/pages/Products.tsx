@@ -19,12 +19,27 @@ const categories: { label: string; value: Category | "todos" }[] = [
 function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
+  const [availability, setAvailability] = useState("todos");
+
   const navigate = useNavigate();
 
   const selectedCategory = searchParams.get("categoria") ?? "todos";
 
+  // Obtener todos los talles disponibles en los productos
+  const availableSizes = useMemo(() => {
+    return [...new Set(products.flatMap((product) => product.sizes))].sort(
+      (a, b) => a.localeCompare(b, "es", { numeric: true })
+    );
+  }, []);
+
+  // Aplicar todos los filtros
   const filteredProducts = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLocaleLowerCase("es");
+    const minimum = minPrice === "" ? null : Number(minPrice);
+    const maximum = maxPrice === "" ? null : Number(maxPrice);
 
     return products.filter((product) => {
       const matchesCategory =
@@ -35,9 +50,37 @@ function Products() {
         product.name.toLocaleLowerCase("es").includes(normalizedSearch) ||
         product.description.toLocaleLowerCase("es").includes(normalizedSearch);
 
-      return matchesCategory && matchesSearch;
+      const matchesMinPrice =
+        minimum === null || product.price >= minimum;
+
+      const matchesMaxPrice =
+        maximum === null || product.price <= maximum;
+
+      const matchesSize =
+        selectedSize === "" || product.sizes.includes(selectedSize);
+
+      const matchesAvailability =
+        availability === "todos" ||
+        (availability === "disponibles" && product.stock > 0) ||
+        (availability === "agotados" && product.stock === 0);
+
+      return (
+        matchesCategory &&
+        matchesSearch &&
+        matchesMinPrice &&
+        matchesMaxPrice &&
+        matchesSize &&
+        matchesAvailability
+      );
     });
-  }, [selectedCategory, searchTerm]);
+  }, [
+    selectedCategory,
+    searchTerm,
+    minPrice,
+    maxPrice,
+    selectedSize,
+    availability,
+  ]);
 
   function selectCategory(category: string) {
     if (category === "todos") {
@@ -47,6 +90,24 @@ function Products() {
     }
   }
 
+  function clearFilters() {
+    setSearchTerm("");
+    setMinPrice("");
+    setMaxPrice("");
+    setSelectedSize("");
+    setAvailability("todos");
+    setSearchParams({});
+  }
+
+  const activeFiltersCount = [
+    searchTerm !== "",
+    minPrice !== "",
+    maxPrice !== "",
+    selectedSize !== "",
+    availability !== "todos",
+    selectedCategory !== "todos",
+  ].filter(Boolean).length;
+
   return (
     <main className="catalog-page">
       <header className="catalog-page__header">
@@ -55,6 +116,7 @@ function Products() {
         <p>Encontrá tu próximo equipamiento deportivo.</p>
       </header>
 
+      {/* Buscador */}
       <div className="catalog-search">
         <label htmlFor="product-search">Buscar productos</label>
 
@@ -79,10 +141,12 @@ function Products() {
         </div>
       </div>
 
+      {/* Categorías */}
       <nav className="catalog-filters" aria-label="Filtrar por categoría">
         {categories.map((category) => (
           <button
             key={category.value}
+            type="button"
             className={`catalog-filters__button ${
               selectedCategory === category.value
                 ? "catalog-filters__button--active"
@@ -96,6 +160,92 @@ function Products() {
         ))}
       </nav>
 
+      {/* Filtros avanzados */}
+      <section className="advanced-filters" aria-label="Filtros avanzados">
+        <div className="advanced-filters__header">
+          <div>
+            <p className="home__eyebrow">PERSONALIZÁ TU BÚSQUEDA</p>
+            <h2>Filtros avanzados</h2>
+          </div>
+
+          <button
+            type="button"
+            className="advanced-filters__clear"
+            onClick={clearFilters}
+            disabled={activeFiltersCount === 0}
+          >
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div className="advanced-filters__grid">
+          {/* Precio mínimo */}
+          <div className="advanced-filters__field">
+            <label htmlFor="min-price">Precio mínimo</label>
+            <input
+              id="min-price"
+              type="number"
+              min="0"
+              placeholder="Desde $"
+              value={minPrice}
+              onChange={(event) => setMinPrice(event.target.value)}
+            />
+          </div>
+
+          {/* Precio máximo */}
+          <div className="advanced-filters__field">
+            <label htmlFor="max-price">Precio máximo</label>
+            <input
+              id="max-price"
+              type="number"
+              min="0"
+              placeholder="Hasta $"
+              value={maxPrice}
+              onChange={(event) => setMaxPrice(event.target.value)}
+            />
+          </div>
+
+          {/* Talle */}
+          <div className="advanced-filters__field">
+            <label htmlFor="size-filter">Talle</label>
+            <select
+              id="size-filter"
+              value={selectedSize}
+              onChange={(event) => setSelectedSize(event.target.value)}
+            >
+              <option value="">Todos los talles</option>
+              {availableSizes.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Disponibilidad */}
+          <div className="advanced-filters__field">
+            <label htmlFor="availability-filter">Disponibilidad</label>
+            <select
+              id="availability-filter"
+              value={availability}
+              onChange={(event) => setAvailability(event.target.value)}
+            >
+              <option value="todos">Todos los productos</option>
+              <option value="disponibles">Con stock</option>
+              <option value="agotados">Sin stock</option>
+            </select>
+          </div>
+        </div>
+
+        <p className="advanced-filters__active">
+          {activeFiltersCount}{" "}
+          {activeFiltersCount === 1
+            ? "filtro aplicado"
+            : "filtros aplicados"}
+        </p>
+      </section>
+
+      {/* Resultados */}
       <section className="catalog-page__content">
         <p className="catalog-page__count" aria-live="polite">
           {filteredProducts.length}{" "}
@@ -120,15 +270,9 @@ function Products() {
           <div className="catalog-empty">
             <h2>No encontramos productos</h2>
             <p>
-              Probá con otro nombre o seleccioná una categoría diferente.
+              Probá modificando los filtros o realizando otra búsqueda.
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                setSearchTerm("");
-                setSearchParams({});
-              }}
-            >
+            <button type="button" onClick={clearFilters}>
               Ver todos los productos
             </button>
           </div>
