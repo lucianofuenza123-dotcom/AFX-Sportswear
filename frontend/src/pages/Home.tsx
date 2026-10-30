@@ -23,8 +23,9 @@ const banners = [
     image: "/images/banner-tercero.png",
     eyebrow: "AFX SPORTSWEAR",
     title: "MARCÁ TU PROPIO RITMO",
-    description: "Diseñado para acompañarte en cada disciplina, cada entrenamiento y cada movimiento.",
-    },
+    description:
+      "Diseñado para acompañarte en cada disciplina, cada entrenamiento y cada movimiento.",
+  },
 ];
 
 function Home() {
@@ -66,7 +67,9 @@ function Home() {
         <div className="home__carousel-content">
           <p className="home__eyebrow">{banner.eyebrow}</p>
 
-          <h1>{banner.title}</h1>
+          <h1 className="home__banner-title" key={banner.title}>
+            {banner.title}
+          </h1>
 
           <p className="home__description">
             {banner.description}
