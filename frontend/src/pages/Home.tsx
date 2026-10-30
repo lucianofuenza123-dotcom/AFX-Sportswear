@@ -20,10 +20,10 @@ const banners = [
       "Encontrá el equipamiento ideal para cada desafío.",
   },
   {
-    image: "/images/banner-tercero.jpg",
+    image: "/images/banner-tercero.png",
     eyebrow: "AFX SPORTSWEAR",
-    title: "EQUIPATE PARA GANAR.",
-    description: "Preparado para cada desafío.",
+    title: "MARCÁ TU PROPIO RITMO",
+    description: "Diseñado para acompañarte en cada disciplina, cada entrenamiento y cada movimiento.",
     },
 ];
 
