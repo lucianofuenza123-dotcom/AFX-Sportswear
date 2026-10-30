@@ -1,4 +1,5 @@
 
+
 export type Category =
   | "camisetas"
   | "shorts"
@@ -17,4 +18,13 @@ export interface Product {
   description: string;
   image: string;
   sizes: string[];
+}
+
+export interface Review {
+  id: number;
+  productId: number;
+  customerName: string;
+  rating: number;
+  title: string;
+  comment: string;
 }

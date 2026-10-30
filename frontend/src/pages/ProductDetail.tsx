@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { products } from "../data/products";
 import { useCart } from "../context/CartContext";
+import { getProductRating, getProductReviews } from "../data/reviews";
 
 function ProductDetail() {
   const { id } = useParams();
@@ -41,6 +42,9 @@ function ProductDetail() {
 
   const availableStock = product.stock - currentQuantity;
 
+  const rating = getProductRating(product.id);
+  const productReviews = getProductReviews(product.id);
+
   const handleAddToCart = () => {
     if (!selectedSize) {
       setMessage("Seleccioná un talle para continuar.");
@@ -77,6 +81,17 @@ function ProductDetail() {
           <p className="product-detail__category">{product.category}</p>
 
           <h1>{product.name}</h1>
+
+          {rating.count > 0 && (
+            <a className="product-detail__rating-link" href="#product-reviews">
+              <span className="product-rating__stars">
+                {"★".repeat(Math.round(rating.average))}
+                {"☆".repeat(5 - Math.round(rating.average))}
+              </span>
+              <strong>{rating.average.toFixed(1)}/5</strong>
+              <span>({rating.count} opiniones)</span>
+            </a>
+          )}
 
           <p className="product-detail__price">{formattedPrice}</p>
 
@@ -170,6 +185,60 @@ function ProductDetail() {
             </p>
           )}
         </div>
+      </section>
+
+      {/* Opiniones de compradores */}
+      <section className="product-reviews" id="product-reviews">
+        <div className="product-reviews__header">
+          <div>
+            <p className="home__eyebrow">EXPERIENCIAS AFX</p>
+            <h2>Opiniones de compradores</h2>
+          </div>
+
+          {rating.count > 0 && (
+            <div className="product-reviews__summary">
+              <strong>{rating.average.toFixed(1)}</strong>
+              <span className="product-rating__stars">
+                {"★".repeat(Math.round(rating.average))}
+                {"☆".repeat(5 - Math.round(rating.average))}
+              </span>
+              <span>{rating.count} opiniones</span>
+            </div>
+          )}
+        </div>
+
+        <p className="product-reviews__demo">
+          Las siguientes opiniones son datos de demostración.
+        </p>
+
+        {productReviews.length > 0 ? (
+          <div className="product-reviews__list">
+            {productReviews.map((review) => (
+              <article className="review-card" key={review.id}>
+                <div className="review-card__top">
+                  <div>
+                    <h3>{review.title}</h3>
+                    <p className="review-card__customer">
+                      {review.customerName} · Comprador
+                    </p>
+                  </div>
+
+                  <span
+                    className="product-rating__stars"
+                    aria-label={`${review.rating} de 5 estrellas`}
+                  >
+                    {"★".repeat(review.rating)}
+                    {"☆".repeat(5 - review.rating)}
+                  </span>
+                </div>
+
+                <p className="review-card__comment">{review.comment}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p>Todavía no hay opiniones para este producto.</p>
+        )}
       </section>
     </main>
   );

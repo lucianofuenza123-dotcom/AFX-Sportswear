@@ -1,6 +1,7 @@
 
 import type { Product } from "../types";
 import { useFavorites } from "../context/FavoritesContext";
+import { getProductRating } from "../data/reviews";
 
 interface ProductCardProps {
   product: Product;
@@ -11,6 +12,7 @@ function ProductCard({ product, onViewDetails }: ProductCardProps) {
   const { toggleFavorite, isFavorite } = useFavorites();
 
   const favorite = isFavorite(product.id);
+  const rating = getProductRating(product.id);
 
   return (
     <article className="product-card">
@@ -48,6 +50,21 @@ function ProductCard({ product, onViewDetails }: ProductCardProps) {
         </span>
 
         <h3 className="product-card__name">{product.name}</h3>
+
+        {rating.count > 0 && (
+          <div className="product-rating">
+            <span className="product-rating__stars" aria-label={`${rating.average.toFixed(1)} de 5 estrellas`}>
+              {"★".repeat(Math.round(rating.average))}
+              {"☆".repeat(5 - Math.round(rating.average))}
+            </span>
+            <span className="product-rating__score">
+              {rating.average.toFixed(1)}
+            </span>
+            <span className="product-rating__count">
+              ({rating.count})
+            </span>
+          </div>
+        )}
 
         <p className="product-card__price">
           {product.price.toLocaleString("es-AR", {
