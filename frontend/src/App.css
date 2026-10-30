@@ -1,8 +1,11 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  box-sizing: border-box;
 }
 
 .logo {
@@ -1735,5 +1738,107 @@
 
   .review-card__top {
     flex-direction: column;
+  }
+}
+
+
+/* =========================
+   ANCHO COMPLETO AFX
+========================= */
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.site-layout {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header,
+.site-footer {
+  width: 100%;
+  max-width: none;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.site-header__inner,
+.site-footer__inner,
+.site-footer__bottom {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.site-layout > main {
+  flex: 1;
+  width: 100%;
+}
+
+/* FIX RESPONSIVE HEADER Y FOOTER */
+@media (max-width: 600px) {
+  .site-header__inner {
+    width: 100%;
+    min-height: auto;
+    padding: 14px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .site-header__logo {
+    width: 100%;
+    text-align: center;
+  }
+
+  .site-header__nav {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 16px;
+  }
+
+  .site-header__link {
+    font-size: 12px;
+  }
+
+  .site-header__cta {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .site-footer {
+    width: 100%;
+    padding: 30px 20px 18px;
+  }
+
+  .site-footer__inner {
+    width: 100%;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+  }
+
+  .site-footer__bottom {
+    width: 100%;
+    overflow-wrap: break-word;
   }
 }
