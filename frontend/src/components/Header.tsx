@@ -1,9 +1,11 @@
 
 import { Link, NavLink } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useFavorites } from "../context/FavoritesContext";
 
 function Header() {
   const { totalItems } = useCart();
+  const { favoriteIds } = useFavorites();
 
   return (
     <header className="site-header">
@@ -30,6 +32,15 @@ function Header() {
             }
           >
             Productos
+          </NavLink>
+
+          <NavLink
+            to="/favoritos"
+            className={({ isActive }) =>
+              isActive ? "site-header__link active" : "site-header__link"
+            }
+          >
+            Favoritos ({favoriteIds.length})
           </NavLink>
 
           <NavLink

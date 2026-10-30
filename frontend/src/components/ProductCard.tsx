@@ -1,5 +1,6 @@
 
 import type { Product } from "../types";
+import { useFavorites } from "../context/FavoritesContext";
 
 interface ProductCardProps {
   product: Product;
@@ -7,6 +8,10 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product, onViewDetails }: ProductCardProps) {
+  const { toggleFavorite, isFavorite } = useFavorites();
+
+  const favorite = isFavorite(product.id);
+
   return (
     <article className="product-card">
       <div className="product-card__image-container">
@@ -15,6 +20,22 @@ function ProductCard({ product, onViewDetails }: ProductCardProps) {
           src={product.image}
           alt={product.name}
         />
+
+        <button
+          type="button"
+          className={`product-card__favorite ${
+            favorite ? "product-card__favorite--active" : ""
+          }`}
+          onClick={() => toggleFavorite(product.id)}
+          aria-label={
+            favorite
+              ? `Quitar ${product.name} de favoritos`
+              : `Agregar ${product.name} a favoritos`
+          }
+          aria-pressed={favorite}
+        >
+          {favorite ? "♥" : "♡"}
+        </button>
 
         {product.stock === 0 && (
           <span className="product-card__badge">Sin stock</span>
