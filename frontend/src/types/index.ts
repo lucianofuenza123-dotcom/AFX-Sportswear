@@ -1,5 +1,3 @@
-
-
 export type Category =
   | "camisetas"
   | "shorts"
@@ -17,6 +15,7 @@ export interface Product {
   stock: number;
   description: string;
   image: string;
+  images?: string[];
   sizes: string[];
 }
 

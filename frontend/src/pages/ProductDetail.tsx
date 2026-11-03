@@ -13,6 +13,7 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
+  const [selectedImage, setSelectedImage] = useState("");
 
   const product = products.find((item) => item.id === Number(id));
 
@@ -27,6 +28,15 @@ function ProductDetail() {
       </main>
     );
   }
+
+  // Galería de imágenes
+  const productImages = product.images?.length
+    ? product.images
+    : [product.image];
+
+  const activeImage = productImages.includes(selectedImage)
+    ? selectedImage
+    : productImages[0];
 
   const formattedPrice = product.price.toLocaleString("es-AR", {
     style: "currency",
@@ -72,10 +82,36 @@ function ProductDetail() {
       </button>
 
       <section className="product-detail__layout">
-        <div className="product-detail__image-container">
-          <img src={product.image} alt={product.name} />
+        {/* Galería de imágenes */}
+        <div className="product-detail__gallery">
+          <div className="product-detail__image-container">
+            <img src={activeImage} alt={product.name} />
+          </div>
+
+          {productImages.length > 1 && (
+            <div className="product-detail__thumbnails">
+              {productImages.map((image, index) => (
+                <button
+                  key={image}
+                  type="button"
+                  className={`product-detail__thumbnail ${
+                    activeImage === image ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedImage(image)}
+                  aria-label={`Ver fotografía ${index + 1}`}
+                  aria-pressed={activeImage === image}
+                >
+                  <img
+                    src={image}
+                    alt={`${product.name} - foto ${index + 1}`}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
+        {/* Información del producto */}
         <div className="product-detail__info">
           <p className="home__eyebrow">AFX SPORTSWEAR</p>
           <p className="product-detail__category">{product.category}</p>

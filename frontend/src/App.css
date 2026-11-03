@@ -794,7 +794,7 @@
 .home__carousel {
   position: relative;
   width: 100%;
-  height: 520px;
+  height: 600px;
   overflow: hidden;
   background: #111;
   color: #fff;
@@ -916,7 +916,7 @@
 
 @media (max-width: 768px) {
   .home__carousel {
-    height: 420px;
+    height: 480px;
   }
 
   .home__carousel-content {
@@ -2049,4 +2049,45 @@ body {
     text-align: center;
     line-height: 1.6;
   }
+}
+
+.product-detail__gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.product-detail__thumbnails {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.product-detail__thumbnail {
+  width: 78px;
+  height: 90px;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  background: #222;
+  border: 2px solid transparent;
+  opacity: 0.65;
+  transition: 0.2s ease;
+}
+
+.product-detail__thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-detail__thumbnail:hover {
+  opacity: 1;
+}
+
+.product-detail__thumbnail.active {
+  border-color: #fff;
+  opacity: 1;
 }
