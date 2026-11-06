@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from database import Base, engine, SessionLocal
 from models import Product
-from routers import products, orders
+from routers import products, orders, auth
 
 app = FastAPI(
     title="AFX Sportswear API",
@@ -28,7 +28,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(products.router)
 app.include_router(orders.router)
-
+app.include_router(auth.router)
 
 INITIAL_PRODUCTS = [
     {
