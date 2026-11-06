@@ -1,35 +1,96 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { products } from "../data/products";
 import { useCart } from "../context/CartContext";
-import { getProductRating, getProductReviews } from "../data/reviews";
+import { getProductById } from "../services/api";
+import type { Product } from "../types";
+import {
+  getProductRating,
+  getProductReviews,
+} from "../data/reviews";
 
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart, items } = useCart();
 
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState("");
 
-  const product = products.find((item) => item.id === Number(id));
+  useEffect(() => {
+    let active = true;
 
-  if (!product) {
+    async function loadProduct() {
+      setLoading(true);
+      setError("");
+      setProduct(null);
+      setSelectedSize("");
+      setSelectedImage("");
+      setQuantity(1);
+      setMessage("");
+
+      const productId = Number(id);
+
+      if (!id || !Number.isInteger(productId) || productId <= 0) {
+        setError("El producto que buscás no existe.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await getProductById(productId);
+
+        if (active) {
+          setProduct(data);
+        }
+      } catch (err) {
+        if (active) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "No se pudo cargar el producto."
+          );
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProduct();
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  if (loading) {
     return (
       <main className="product-detail__not-found">
-        <h1>Producto no encontrado</h1>
-        <p>El producto que buscás no existe.</p>
-        <button onClick={() => navigate("/productos")}>
+        <p role="status">Cargando producto...</p>
+      </main>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <main className="product-detail__not-found">
+        <h1>Producto no disponible</h1>
+        <p role="alert">{error || "El producto que buscás no existe."}</p>
+        <button type="button" onClick={() => navigate("/productos")}>
           Volver al catálogo
         </button>
       </main>
     );
   }
 
-  // Galería de imágenes
   const productImages = product.images?.length
     ? product.images
     : [product.image];
@@ -76,13 +137,13 @@ function ProductDetail() {
     <main className="product-detail">
       <button
         className="product-detail__back"
+        type="button"
         onClick={() => navigate("/productos")}
       >
         ← Volver a productos
       </button>
 
       <section className="product-detail__layout">
-        {/* Galería de imágenes */}
         <div className="product-detail__gallery">
           <div className="product-detail__image-container">
             <img src={activeImage} alt={product.name} />
@@ -111,7 +172,6 @@ function ProductDetail() {
           )}
         </div>
 
-        {/* Información del producto */}
         <div className="product-detail__info">
           <p className="home__eyebrow">AFX SPORTSWEAR</p>
           <p className="product-detail__category">{product.category}</p>
@@ -119,7 +179,10 @@ function ProductDetail() {
           <h1>{product.name}</h1>
 
           {rating.count > 0 && (
-            <a className="product-detail__rating-link" href="#product-reviews">
+            <a
+              className="product-detail__rating-link"
+              href="#product-reviews"
+            >
               <span className="product-rating__stars">
                 {"★".repeat(Math.round(rating.average))}
                 {"☆".repeat(5 - Math.round(rating.average))}
@@ -183,7 +246,9 @@ function ProductDetail() {
               const value = Number(event.target.value);
 
               if (Number.isInteger(value) && value >= 1) {
-                setQuantity(Math.min(value, Math.max(1, availableStock)));
+                setQuantity(
+                  Math.min(value, Math.max(1, availableStock))
+                );
               }
 
               setMessage("");
@@ -223,7 +288,6 @@ function ProductDetail() {
         </div>
       </section>
 
-      {/* Opiniones de compradores */}
       <section className="product-reviews" id="product-reviews">
         <div className="product-reviews__header">
           <div>
@@ -268,7 +332,9 @@ function ProductDetail() {
                   </span>
                 </div>
 
-                <p className="review-card__comment">{review.comment}</p>
+                <p className="review-card__comment">
+                  {review.comment}
+                </p>
               </article>
             ))}
           </div>

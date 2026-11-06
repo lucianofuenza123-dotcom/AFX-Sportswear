@@ -1,0 +1,33 @@
+.admin-page { min-height: 100vh; background: #fff; color: #000; padding: 24px; }
+.admin-header, .admin-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.admin-header { border-bottom: 2px solid #000; padding-bottom: 16px; margin-bottom: 24px; }
+.admin-header h1 { margin: 0; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; }
+.admin-toolbar { margin-bottom: 16px; }
+.admin-toolbar h2 { margin: 0; }
+
+.admin-btn { background: #000; color: #fff; border: 2px solid #000; padding: 8px 16px; cursor: pointer; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+.admin-btn:hover { background: #fff; color: #000; }
+.admin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.admin-btn-outline { background: #fff; color: #000; }
+.admin-btn-outline:hover { background: #000; color: #fff; }
+.admin-btn-danger { background: #fff; color: #000; border-style: dashed; }
+.admin-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.admin-table-wrap { overflow-x: auto; }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th { background: #000; color: #fff; text-align: left; padding: 10px; }
+.admin-table td { padding: 10px; border-bottom: 1px solid #000; vertical-align: middle; }
+.admin-table img { width: 56px; height: 56px; object-fit: cover; border: 1px solid #000; }
+
+.admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; padding: 16px; }
+.admin-card { background: #fff; color: #000; border: 2px solid #000; padding: 28px; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 14px; }
+.admin-card h1, .admin-card h2 { margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+.admin-card label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 0.85rem; }
+.admin-card input, .admin-card select, .admin-card textarea { padding: 8px; border: 2px solid #000; background: #fff; color: #000; font: inherit; }
+
+.admin-modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 1000; overflow-y: auto; }
+.admin-form { max-width: 520px; max-height: 92vh; overflow-y: auto; }
+.admin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.admin-error { color: #fff; background: #000; padding: 8px 12px; margin: 0; font-size: 0.9rem; }
+.admin-loading { padding: 24px; text-align: center; }

@@ -1,9 +1,9 @@
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { products } from "../data/products";
 import ProductCard from "../components/ProductCard";
-import type { Category } from "../types";
+import { getProducts } from "../services/api";
+import type { Product, Category } from "../types";
 
 const categories: { label: string; value: Category | "todos" }[] = [
   { label: "Todos", value: "todos" },
@@ -18,6 +18,10 @@ const categories: { label: string; value: Category | "todos" }[] = [
 
 function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -25,17 +29,47 @@ function Products() {
   const [availability, setAvailability] = useState("todos");
 
   const navigate = useNavigate();
-
   const selectedCategory = searchParams.get("categoria") ?? "todos";
 
-  // Obtener todos los talles disponibles en los productos
+  useEffect(() => {
+    let active = true;
+
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await getProducts();
+
+        if (active) {
+          setProducts(data);
+        }
+      } catch (err) {
+        if (active) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "No se pudieron cargar los productos"
+          );
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const availableSizes = useMemo(() => {
     return [...new Set(products.flatMap((product) => product.sizes))].sort(
       (a, b) => a.localeCompare(b, "es", { numeric: true })
     );
-  }, []);
+  }, [products]);
 
-  // Aplicar todos los filtros
   const filteredProducts = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLocaleLowerCase("es");
     const minimum = minPrice === "" ? null : Number(minPrice);
@@ -74,6 +108,7 @@ function Products() {
       );
     });
   }, [
+    products,
     selectedCategory,
     searchTerm,
     minPrice,
@@ -116,10 +151,8 @@ function Products() {
         <p>Encontrá tu próximo equipamiento deportivo.</p>
       </header>
 
-      {/* Buscador */}
       <div className="catalog-search">
         <label htmlFor="product-search">Buscar productos</label>
-
         <div className="catalog-search__input-wrapper">
           <input
             id="product-search"
@@ -128,7 +161,6 @@ function Products() {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
-
           {searchTerm && (
             <button
               type="button"
@@ -141,7 +173,6 @@ function Products() {
         </div>
       </div>
 
-      {/* Categorías */}
       <nav className="catalog-filters" aria-label="Filtrar por categoría">
         {categories.map((category) => (
           <button
@@ -160,7 +191,6 @@ function Products() {
         ))}
       </nav>
 
-      {/* Filtros avanzados */}
       <section className="advanced-filters" aria-label="Filtros avanzados">
         <div className="advanced-filters__header">
           <div>
@@ -179,7 +209,6 @@ function Products() {
         </div>
 
         <div className="advanced-filters__grid">
-          {/* Precio mínimo */}
           <div className="advanced-filters__field">
             <label htmlFor="min-price">Precio mínimo</label>
             <input
@@ -192,7 +221,6 @@ function Products() {
             />
           </div>
 
-          {/* Precio máximo */}
           <div className="advanced-filters__field">
             <label htmlFor="max-price">Precio máximo</label>
             <input
@@ -205,7 +233,6 @@ function Products() {
             />
           </div>
 
-          {/* Talle */}
           <div className="advanced-filters__field">
             <label htmlFor="size-filter">Talle</label>
             <select
@@ -222,7 +249,6 @@ function Products() {
             </select>
           </div>
 
-          {/* Disponibilidad */}
           <div className="advanced-filters__field">
             <label htmlFor="availability-filter">Disponibilidad</label>
             <select
@@ -239,43 +265,54 @@ function Products() {
 
         <p className="advanced-filters__active">
           {activeFiltersCount}{" "}
-          {activeFiltersCount === 1
-            ? "filtro aplicado"
-            : "filtros aplicados"}
+          {activeFiltersCount === 1 ? "filtro aplicado" : "filtros aplicados"}
         </p>
       </section>
 
-      {/* Resultados */}
       <section className="catalog-page__content">
-        <p className="catalog-page__count" aria-live="polite">
-          {filteredProducts.length}{" "}
-          {filteredProducts.length === 1
-            ? "producto encontrado"
-            : "productos encontrados"}
-        </p>
-
-        {filteredProducts.length > 0 ? (
-          <div className="products-grid">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onViewDetails={(productId) =>
-                  navigate(`/productos/${productId}`)
-                }
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="catalog-empty">
-            <h2>No encontramos productos</h2>
-            <p>
-              Probá modificando los filtros o realizando otra búsqueda.
-            </p>
-            <button type="button" onClick={clearFilters}>
-              Ver todos los productos
+        {loading ? (
+          <p role="status">Cargando productos...</p>
+        ) : error ? (
+          <div role="alert" className="catalog-empty">
+            <h2>No pudimos cargar los productos</h2>
+            <p>{error}</p>
+            <button type="button" onClick={() => window.location.reload()}>
+              Reintentar
             </button>
           </div>
+        ) : (
+          <>
+            <p className="catalog-page__count" aria-live="polite">
+              {filteredProducts.length}{" "}
+              {filteredProducts.length === 1
+                ? "producto encontrado"
+                : "productos encontrados"}
+            </p>
+
+            {filteredProducts.length > 0 ? (
+              <div className="products-grid">
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onViewDetails={(productId) =>
+                      navigate(`/productos/${productId}`)
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="catalog-empty">
+                <h2>No encontramos productos</h2>
+                <p>
+                  Probá modificando los filtros o realizando otra búsqueda.
+                </p>
+                <button type="button" onClick={clearFilters}>
+                  Ver todos los productos
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
     </main>

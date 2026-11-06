@@ -1,11 +1,12 @@
-
 import { Link, NavLink } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useFavorites } from "../context/FavoritesContext";
+import { useAuth } from "../context/AuthContext";
 
 function Header() {
   const { totalItems } = useCart();
   const { favoriteIds } = useFavorites();
+  const { user, logout } = useAuth();
 
   return (
     <header className="site-header">
@@ -51,6 +52,42 @@ function Header() {
           >
             Carrito ({totalItems})
           </NavLink>
+
+          {user && (
+            <NavLink
+              to="/mis-pedidos"
+              className={({ isActive }) =>
+                isActive ? "site-header__link active" : "site-header__link"
+              }
+            >
+              Mis pedidos
+            </NavLink>
+          )}
+
+          {user?.role === "admin" && (
+            <NavLink to="/admin" className="site-header__link">
+              Panel
+            </NavLink>
+          )}
+
+          {user ? (
+            <button
+              type="button"
+              className="site-header__link site-header__link--button"
+              onClick={logout}
+            >
+              Salir ({user.name.split(" ")[0]})
+            </button>
+          ) : (
+            <NavLink
+              to="/login"
+              className={({ isActive }) =>
+                isActive ? "site-header__link active" : "site-header__link"
+              }
+            >
+              Ingresar
+            </NavLink>
+          )}
         </nav>
 
         <Link to="/productos" className="site-header__cta">
